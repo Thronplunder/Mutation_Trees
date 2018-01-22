@@ -1,12 +1,13 @@
 #include "test.h"
 
   
-branch::branch(vec2 root, float maxLength, float angle, int generation, float width){
+branch::branch(vec2 root, float maxLength, float angle, int generation, float width, double maxAge)
+ :mSender(localPort, destinationHost, destinationPort), mIsConnected(false) {
 	this->root = root;
 	this->maxLength = maxLength;
 	this->angle = angle;
 	this->width = width;
-	this->currentLength = 0.0011;
+	this->currentLength = 0.0011f;
 	this->head = root + polarToCartesian(currentLength, angle);
 	this->maxChildren = Rand::randInt(7);
 	this->CurrentChildren = 0;
@@ -15,10 +16,16 @@ branch::branch(vec2 root, float maxLength, float angle, int generation, float wi
 	this->oldTime = app::getElapsedSeconds();
 	this->deltaTime = 0;
 	this->age = 0;
+	this->isDead = false;
+	this->maxAge = maxAge;
+	mSender.bind();
+	//osc::Message msg("/born");
+	//msg.append(generation);
+	//mSender.send(msg);
 }
 
 void branch::addChild(vec2 root, float maxLength, float angle, float width, int newGeneration){
-	children.push_back(branch(root, maxLength, angle, newGeneration, width));
+	children.push_back(branch(root, maxLength, angle, newGeneration, width, (this->maxAge - this->age) * 0.9));
 }
 void branch::drawTree(){
 	drawBranch();
@@ -30,12 +37,14 @@ void branch::drawTree(){
 	}
 }
 void branch::drawBranch(){
-	gl::pushMatrices();
-	gl::lineWidth(width);
-	glLineWidth(width);
-	gl::color(Color(0.5, 0.5, 0));
-	gl::drawLine(root, head);
-	gl::popMatrices();
+	if (this->isDead == false) {
+		gl::pushMatrices();
+		gl::lineWidth(width);
+		glLineWidth(width);
+		gl::color(Color(0.5, 0.5, 0));
+		gl::drawLine(root, head);
+		gl::popMatrices();
+	}
 }
 vec2 branch::polarToCartesian(float radius, float angle) {
 	return vec2(radius * std::sin(angle), radius * std::cos(angle));
@@ -61,7 +70,9 @@ void branch::updateBranch() {
 	if(currentLength < maxLength){
 		grow(growSpeed);
 	}
-	
+	if (this->age > this->maxAge) {
+		this->die();
+	}
 	this->oldTime = app::getElapsedSeconds();
 }
 
@@ -84,4 +95,12 @@ vec2 branch::getHead() {
 }
 vec2 branch::getRoot() {
 	return root;
+}
+
+void branch::die() {
+	this->isDead = true;
+}
+
+bool branch::status() {
+	return this->isDead;
 }
