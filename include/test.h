@@ -5,13 +5,20 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
-#include "cinder/osc/Osc.h"
+#include "cinder/Log.h"
+#include "cinder\osc\Osc.h"
+#include "cinder\CinderMath.h"
 
 using namespace ci;
+using namespace ci::app;
+
+#define USE_UDP 1
+
+#if USE_UDP
+using Sender = osc::SenderUdp;
+#else
 using Sender = osc::SenderTcp;
-const std::string destinationHost = "127.0.0.1";
-const uint16_t destinationPort = 57121;
-const uint16_t localPort = 57120;
+#endif
 
 class branch {
 	std::vector<branch> children;
@@ -23,7 +30,8 @@ class branch {
 	int generation;
 	float width;
 	int maxChildren;
-	int CurrentChildren;
+	int currentChildren;
+	int id;
 	float growSpeed;
 	double deltaTime;
 	double oldTime;
@@ -36,9 +44,12 @@ class branch {
 	vec2 polarToCartesian(float radius, float angle);
 	void updateBranch();
 	void die();
-	Sender mSender;
 	bool mIsConnected;
-	void onSendError(asio::error_code error);
+	std::vector<osc::Message> messages;
+	std::vector<osc::Message> getMessages();
+	static void incID();
+
+	static int globalID;
 
 	public:
 	void drawTree();
@@ -47,5 +58,6 @@ class branch {
 	vec2 getHead();
 	vec2 getRoot();
 	bool status();
+	std::vector<osc::Message> gatherMessages();
 };
 
