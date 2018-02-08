@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "test.h"
+#include "../test.h"
 #include "cinder\Xml.h"
 #include "cinder\osc\Osc.h"
 #include "cinder/CinderMath.h"

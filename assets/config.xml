@@ -1,0 +1,7 @@
+<config>
+<windowWidth>800</windowWidth>
+<windowHeight>600</windowHeight>
+<maxTrees>2</maxTrees>
+<destinationIP>127.0.0.1</destinationIP>
+<screen>1</screen>
+</config>

@@ -1,14 +1,14 @@
 #include "test.h"
 
 int branch::globalID = 0;
-branch::branch(vec2 root, float maxLength, float angle, int generation, float width, double maxAge){
+branch::branch(vec2 root, float maxLength, float angle, int generation, float width, double maxAge, int screen){
 	this->root = root;
 	this->maxLength = maxLength;
 	this->angle = angle;
 	this->width = width;
 	this->currentLength = 0.0011f;
 	this->head = root + polarToCartesian(currentLength, angle);
-	this->maxChildren = Rand::randInt(7);
+	this->maxChildren = Rand::randInt(6);
 	this->currentChildren = 0;
 	this->growSpeed = Rand::randFloat(15, 30);
 	this->generation = generation;
@@ -18,16 +18,18 @@ branch::branch(vec2 root, float maxLength, float angle, int generation, float wi
 	this->isDead = false;
 	this->maxAge = maxAge;
 	this->id = branch::globalID;
+	this->screen = screen;
 	branch::incID();
 
 	osc::Message message("/born");
 	message.append(id);
 	message.append(generation);
+	message.append(screen);
 	this->messages.push_back(message);
 }
 
 void branch::addChild(vec2 root, float maxLength, float angle, float width, int newGeneration){
-	children.push_back(branch(root, maxLength, angle, newGeneration, width, (this->maxAge - this->age) * 0.9));
+	children.push_back(branch(root, maxLength, angle, newGeneration, width, (this->maxAge - this->age) * Rand::randFloat(0.75, 0.95), this->screen));
 }
 void branch::drawTree(){
 	drawBranch();
@@ -43,7 +45,7 @@ void branch::drawBranch(){
 		gl::pushMatrices();
 		gl::lineWidth(width);
 		glLineWidth(width);
-		gl::color(1, 1, 1, 1.0 -  1.5*(1.0 / (this->generation + 5)));
+		gl::color(1, 1, 1, 1.0 -  1.7*(1.0 / (this->generation + 5)));
 		gl::drawLine(root, head);
 		gl::popMatrices();
 	}
@@ -62,7 +64,7 @@ void branch::updateBranch() {
 			vec2 newRoot = root + polarToCartesian(currentLength, angle) * Rand::randFloat(0.1, 0.96);
 			float newLength = maxLength * Rand::randFloat(0.3, 0.9);
 			float newAngle = angle + Rand::randFloat( M_PI * -0.4, M_PI * 0.4);
-			float newWidth = width * Rand::randFloat(0.6, 0.9);
+			float newWidth = width * Rand::randFloat(0.7, 0.93);
 			int newGen = this->generation - 1;
 			addChild(newRoot, newLength, newAngle, newWidth, newGen);
 			currentChildren = currentChildren + 1;
@@ -72,7 +74,7 @@ void branch::updateBranch() {
 	if(currentLength < maxLength){
 		grow(growSpeed);
 	}
-	if (this->age > this->maxAge) {
+	if (this->age > this->maxAge && this->isDead == false) {
 		this->die();
 	}
 	this->oldTime = app::getElapsedSeconds();
@@ -103,7 +105,7 @@ void branch::die() {
 	this->isDead = true;
 	osc::Message message("/die");
 	message.append(id);
-	message.append(generation)
+	message.append(generation);
 	this->messages.push_back(message);
 }
 

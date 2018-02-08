@@ -24,6 +24,7 @@ class branch {
 	std::vector<branch> children;
 	vec2 root;
 	vec2 head;
+	int screen;
 	float angle;
 	float maxLength;
 	float currentLength;
@@ -53,7 +54,7 @@ class branch {
 
 	public:
 	void drawTree();
-	branch(vec2 root, float maxLength, float angle, int generation, float width, double maxAge);
+	branch(vec2 root, float maxLength, float angle, int generation, float width, double maxAge, int screen);
 	void updateTree();
 	vec2 getHead();
 	vec2 getRoot();
