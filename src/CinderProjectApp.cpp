@@ -89,6 +89,7 @@ void CinderProjectApp::update()
 void CinderProjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
+	gl::setMatricesWindow(getWindowSize());
 	for (list<branch>::iterator it = wald.begin(); it != wald.end(); it++) {
 		it->drawTree();
 	}
