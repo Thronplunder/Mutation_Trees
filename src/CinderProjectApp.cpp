@@ -42,6 +42,7 @@ CinderProjectApp::CinderProjectApp():mSender(localPort, destinationHost, destina
 {}
 
 void CinderProjectApp::setup() {
+	Rand::randomize();
 	XmlTree doc(loadAsset("config.xml"));
 	maxTrees = doc.getChild("config/maxTrees").getValue<int>();
 	windowWidth = doc.getChild("config/windowWidth").getValue<int>();
@@ -62,9 +63,9 @@ void CinderProjectApp::update()
 	removeDeadTrees();
 	if (wald.size() < maxTrees) {
 		int chance = Rand::randInt(30);
-		if (chance == 0 && getElapsedSeconds() < 180) {
-			vec2 position = vec2( Rand::randInt(getWindowWidth()* 0.1, getWindowWidth() * 0.9), getWindowHeight());
-			float length = Rand::randFloat(getWindowHeight() * 0.5, getWindowHeight() * 0.85);
+		if (chance == 0 && getElapsedSeconds() < 300) {
+			vec2 position = vec2( Rand::randInt(getWindowWidth()* 0.1, getWindowWidth() * 0.9), getWindowHeight()+ 9);
+			float length = Rand::randFloat(getWindowHeight() * 0.5, getWindowHeight() * 0.95);
 			float angle = Rand::randFloat(M_PI*0.8, M_PI * 1.2) ;
 			int generation = Rand::randInt(3, 4);
 			float width = Rand::randFloat(10, 17);

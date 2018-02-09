@@ -6,8 +6,8 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/Log.h"
-#include "cinder\osc\Osc.h"
-#include "cinder\CinderMath.h"
+#include "cinder/osc/Osc.h"
+#include "cinder/CinderMath.h"
 
 using namespace ci;
 using namespace ci::app;

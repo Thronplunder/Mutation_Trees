@@ -10,7 +10,7 @@ branch::branch(vec2 root, float maxLength, float angle, int generation, float wi
 	this->head = root + polarToCartesian(currentLength, angle);
 	this->maxChildren = Rand::randInt(6);
 	this->currentChildren = 0;
-	this->growSpeed = Rand::randFloat(15, 30);
+	this->growSpeed = Rand::randFloat(maxLength /25.0, maxLength / 20);
 	this->generation = generation;
 	this->oldTime = app::getElapsedSeconds();
 	this->deltaTime = 0;
@@ -29,7 +29,7 @@ branch::branch(vec2 root, float maxLength, float angle, int generation, float wi
 }
 
 void branch::addChild(vec2 root, float maxLength, float angle, float width, int newGeneration){
-	children.push_back(branch(root, maxLength, angle, newGeneration, width, (this->maxAge - this->age) * Rand::randFloat(0.75, 0.95), this->screen));
+	children.push_back(branch(root, maxLength, angle, newGeneration, width, (this->maxAge - this->age) * Rand::randFloat(0.85, 0.98), this->screen));
 }
 void branch::drawTree(){
 	drawBranch();
@@ -43,10 +43,14 @@ void branch::drawTree(){
 void branch::drawBranch(){
 	if (this->isDead == false) {
 		gl::pushMatrices();
-		gl::lineWidth(width);
-		glLineWidth(width);
-		gl::color(1, 1, 1, 1.0 -  1.7*(1.0 / (this->generation + 5)));
-		gl::drawLine(root, head);
+		gl::color(1, 1, 1, 0.7);
+		vec2 p1 = root - polarToCartesian(width * 0.5, angle + M_PI * 0.5);
+		vec2 p2 = root + polarToCartesian(width * 0.5, angle + M_PI * 0.5);
+		vec2 p3 = head - polarToCartesian(width * 0.5, angle + M_PI * 0.5);
+		vec2 p4 = head + polarToCartesian(width * 0.5, angle + M_PI * 0.5);
+		gl::drawSolidTriangle(p1, p2, p3);
+		gl::drawSolidTriangle(p2, p4, p3);
+		gl::drawLine(this->root, this->head);
 		gl::popMatrices();
 	}
 }
@@ -106,6 +110,7 @@ void branch::die() {
 	osc::Message message("/die");
 	message.append(id);
 	message.append(generation);
+	message.append(screen);
 	this->messages.push_back(message);
 }
 
